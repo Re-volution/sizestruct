@@ -4,19 +4,21 @@ Can't nest pointer.<br>
 
 ###For example：
 
-package main<br> 
+```go
+package main
 
-import (<br> 
-	"sizestruct"<br> 
-)<br> 
+import (
+	"github.com/Re-volution/sizestruct"
+)
 
-type test struct {<br> 
-	a int<br> 
-	b string<br> 
-	c map[string]int<br> 
-}<br> 
-
-func main() {<br> 
-	var data = new(test)<br> 
-	sizestruct.SizeStruct(data)<br> 
+type test struct {
+	a int
+	b string
+	c map[string]int
 }
+
+func main() {
+	var data = new(test)
+	sizestruct.SizeStruct(data)
+}
+```
