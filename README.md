@@ -1,22 +1,22 @@
 # SizeStruct
-Recommended test use only.
-Can't nest pointer.
+Recommended test use only.<br> 
+Can't nest pointer.<br> 
 
-For example：
+###For example：
 
-package main
+package main<br> 
 
-import (
-  "sizestruct"
-)
+import (<br> 
+	"sizestruct"<br> 
+)<br> 
 
-type test struct {
-	a int
-	b string
-	c map[string]int
-}
+type test struct {<br> 
+	a int<br> 
+	b string<br> 
+	c map[string]int<br> 
+}<br> 
 
-func main() {
-	var data = new(test)
-	sizestruct.SizeStruct(data)
+func main() {<br> 
+	var data = new(test)<br> 
+	sizestruct.SizeStruct(data)<br> 
 }
