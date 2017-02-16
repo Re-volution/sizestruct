@@ -4,7 +4,6 @@ package sizestruct
 import (
 	"fmt"
 	"reflect"
-	"unsafe"
 )
 
 func SizeStruct(data interface{}) int {
@@ -53,8 +52,7 @@ func sizeof(v reflect.Value) int {
 		return sum
 
 	case reflect.Ptr, reflect.Interface:
-		p := (*[]byte)(unsafe.Pointer(v.Pointer()))
-		if p == nil {
+		if v.IsNil() {
 			return 0
 		}
 		return sizeof(v.Elem())
