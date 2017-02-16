@@ -12,9 +12,10 @@ import (
 )
 
 type test struct {
-	a int
+	a int32
 	b string
 	c map[string]int
+	d int64 `ss:"-"`
 }
 
 func main() {
@@ -22,3 +23,4 @@ func main() {
 	sizestruct.SizeStruct(data)
 }
 ```
+This example will not be calculated the size of the "d".
