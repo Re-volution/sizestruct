@@ -59,6 +59,9 @@ func sizeof(v reflect.Value) int {
 	case reflect.Struct:
 		sum := 0
 		for i, n := 0, v.NumField(); i < n; i++ {
+			if v.Type().Field(i).Tag.Get("ss") == "-" {
+				continue
+			}
 			s := sizeof(v.Field(i))
 			if s < 0 {
 				return -1
