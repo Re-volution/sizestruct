@@ -76,6 +76,9 @@ func sizeof(v reflect.Value) int {
 		reflect.Int:
 		return int(v.Type().Size())
 
+	case reflect.Bool:
+		return 1
+		
 	default:
 		fmt.Println("t.Kind() no found:", v.Kind())
 	}
