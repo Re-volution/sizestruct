@@ -1,8 +1,10 @@
 # SizeStruct
-Recommended test use only.<br> 
-目前只是测试阶段使用.<br> 
-Can't nest pointer.<br> 
-不可以有重复的指针.<br> 
+Recommended test use only.this is some small questions.<br> 
+目前只是测试阶段使用.尚有些问题<br> 
+Can have nest pointer.<br> 
+可以有重复的指针.<br> 
+There is no statistics on the size of chan and func.<br>
+对chan、func的大小没有统计.<br> 
 
 ###For example：
 
