@@ -6,82 +6,121 @@ import (
 	"reflect"
 )
 
-func SizeStruct(data interface{}) int {
-	return sizeof(reflect.ValueOf(data))
+type sStruct struct {
+	npm   map[uintptr]bool
+	exNum int
 }
 
-func sizeof(v reflect.Value) int {
+func SizeStruct(data interface{}) int {
+	var npm = &sStruct{make(map[uintptr]bool), 0}
+	num := npm.sizeof(reflect.ValueOf(data))
+	return num //+ npm.exNum
+}
+
+func SizeStructAndType(data interface{}) int {
+	var npm = &sStruct{make(map[uintptr]bool), 0}
+	num := npm.sizeof(reflect.ValueOf(data))
+	return num + npm.exNum
+}
+
+func (s *sStruct) sizeof(v reflect.Value) int {
 	switch v.Kind() {
 	case reflect.Map:
 		sum := 0
 		keys := v.MapKeys()
 		for i := 0; i < len(keys); i++ {
 			mapkey := keys[i]
-			s := sizeof(mapkey)
-			if s < 0 {
+			num := s.sizeof(mapkey)
+			if num < 0 {
 				return -1
 			}
-			sum += s
-			s = sizeof(v.MapIndex(mapkey))
-			if s < 0 {
+			sum += num
+			num = s.sizeof(v.MapIndex(mapkey))
+			if num < 0 {
 				return -1
 			}
-			sum += s
+			sum += num
 		}
+		s.exNum += int(v.Type().Size())
 		return sum
-	case reflect.Slice, reflect.Array:
+	case reflect.Slice:
 		sum := 0
 		for i, n := 0, v.Len(); i < n; i++ {
-			s := sizeof(v.Index(i))
-			if s < 0 {
+			num := s.sizeof(v.Index(i))
+			if num < 0 {
 				return -1
 			}
-			sum += s
+			sum += num
+		}
+		s.exNum += int(v.Type().Size())
+		return sum
+
+	case reflect.Array:
+		sum := 0
+		for i, n := 0, v.Len(); i < n; i++ {
+			num := s.sizeof(v.Index(i))
+			if num < 0 {
+				return -1
+			}
+			sum += num
 		}
 		return sum
 
 	case reflect.String:
 		sum := 0
 		for i, n := 0, v.Len(); i < n; i++ {
-			s := sizeof(v.Index(i))
-			if s < 0 {
+			num := s.sizeof(v.Index(i))
+			if num < 0 {
 				return -1
 			}
-			sum += s
+			sum += num
 		}
+		s.exNum += int(v.Type().Size())
 		return sum
 
 	case reflect.Ptr, reflect.Interface:
+		s.exNum += int(v.Type().Size())
 		if v.IsNil() {
 			return 0
 		}
-		return sizeof(v.Elem())
+		fmt.Println(v.Pointer())
+		if _, ok := s.npm[v.Pointer()]; ok {
+			return 0
+		} else {
+			s.npm[v.Pointer()] = true
+		}
+		return s.sizeof(v.Elem())
 	case reflect.Struct:
 		sum := 0
 		for i, n := 0, v.NumField(); i < n; i++ {
 			if v.Type().Field(i).Tag.Get("ss") == "-" {
 				continue
 			}
-			s := sizeof(v.Field(i))
-			if s < 0 {
+			num := s.sizeof(v.Field(i))
+			if num < 0 {
 				return -1
 			}
-			sum += s
+			sum += num
 		}
 		return sum
 
+	case reflect.Func, reflect.Chan:
+		s.exNum += int(v.Type().Size())
+		if v.IsNil() {
+			return 0
+		}
+		return 0 //Temporary non handling func,chan.
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
 		reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
 		reflect.Int:
 		return int(v.Type().Size())
-
 	case reflect.Bool:
-		return 1
-		
+		return int(v.Type().Size())
 	default:
 		fmt.Println("t.Kind() no found:", v.Kind())
 	}
 
 	return -1
 }
+
