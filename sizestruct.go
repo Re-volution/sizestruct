@@ -83,7 +83,7 @@ func (s *sStruct) sizeof(v reflect.Value) int {
 		if v.IsNil() {
 			return 0
 		}
-		fmt.Println(v.Pointer())
+		
 		if _, ok := s.npm[v.Pointer()]; ok {
 			return 0
 		} else {
