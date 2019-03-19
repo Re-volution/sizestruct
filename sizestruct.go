@@ -98,6 +98,12 @@ func (s *sStruct) sizeof(v reflect.Value) int {
 		}
 		return s.sizeof(v.Elem())
 
+	case reflect.Uintptr: //Don't think it's Pointer 不认为是指针
+		return int(v.Type().Size())
+
+	case reflect.UnsafePointer: //Don't think it's Pointer 不认为是指针
+		return int(v.Type().Size())
+
 	case reflect.Struct:
 		sum := 0
 		for i, n := 0, v.NumField(); i < n; i++ {
