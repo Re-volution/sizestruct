@@ -11,13 +11,13 @@ type sStruct struct {
 	exNum int
 }
 
-func SizeStruct(data interface{}) int {
+func SizeOf(data interface{}) int {
 	var npm = &sStruct{make(map[uintptr]bool), 0}
 	num := npm.sizeof(reflect.ValueOf(data))
 	return num //+ npm.exNum
 }
 
-func SizeStructAndType(data interface{}) int {
+func SizeTOf(data interface{}) int {
 	var npm = &sStruct{make(map[uintptr]bool), 0}
 	num := npm.sizeof(reflect.ValueOf(data))
 	return num + npm.exNum
@@ -78,18 +78,26 @@ func (s *sStruct) sizeof(v reflect.Value) int {
 		s.exNum += int(v.Type().Size())
 		return sum
 
-	case reflect.Ptr, reflect.Interface:
+	case reflect.Ptr:
 		s.exNum += int(v.Type().Size())
 		if v.IsNil() {
 			return 0
 		}
-		
+		//fmt.Println(v.Pointer())
 		if _, ok := s.npm[v.Pointer()]; ok {
 			return 0
 		} else {
 			s.npm[v.Pointer()] = true
 		}
 		return s.sizeof(v.Elem())
+
+	case reflect.Interface:
+		s.exNum += int(v.Type().Size())
+		if v.IsNil() {
+			return 0
+		}
+		return s.sizeof(v.Elem())
+
 	case reflect.Struct:
 		sum := 0
 		for i, n := 0, v.NumField(); i < n; i++ {
@@ -123,4 +131,3 @@ func (s *sStruct) sizeof(v reflect.Value) int {
 
 	return -1
 }
-
